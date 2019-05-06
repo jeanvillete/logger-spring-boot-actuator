@@ -1,0 +1,218 @@
+{
+	"apiVersion": "v1",
+	"kind": "List",
+	"items": [{
+			"apiVersion": "v1",
+			"kind": "BuildConfig",
+			"metadata": {
+				"labels": {
+					"app": "springboot-actuator-build",
+					"built-from": "java-b2i-template"
+				},
+				"name": "springboot-actuator-sample"
+			},
+			"spec": {
+				"output": {
+					"to": {
+						"kind": "ImageStreamTag",
+						"name": "springboot-actuator-sample:latest"
+					}
+				},
+				"postCommit": {},
+				"resources": {},
+				"runPolicy": "Serial",
+				"source": {
+					"secrets": [{
+							"destinationDir": "/artifactory",
+							"secret": {
+								"name": "springboot-actuator-artifactory-credentials"
+							}
+						}
+					],
+					"type": "None"
+				},
+				"strategy": {
+					"sourceStrategy": {
+						"env": [{
+								"name": "BASE_REPO_URL",
+								"value": "https://artifactory.com/artifactory"
+							}, {
+								"name": "REPO_NAME",
+								"value": "mvn-public-local"
+							}, {
+								"name": "GROUP_ID",
+								"value": "com.samples"
+							}, {
+								"name": "ARTIFACT_ID",
+								"value": "loggers-spring-boot-actuator"
+							}, {
+								"name": "VERSION",
+								"value": "0.0.1-RELEASE"
+							}, {
+								"name": "PACKAGING",
+								"value": "jar"
+							}, {
+								"name": "CLASSIFIER"
+							}, {
+								"name": "SNAPSHOT_VERSION"
+							}
+						],
+						"forcePull": true,
+						"from": {
+							"kind": "ImageStreamTag",
+							"name": "java-b2i:latest",
+							"namespace": "openshift"
+						}
+					},
+					"type": "Source"
+				},
+				"triggers": [{
+						"type": "ConfigChange"
+					}
+				]
+			},
+			"status": {}
+		}, {
+			"apiVersion": "v1",
+			"kind": "ImageStream",
+			"metadata": {
+				"labels": {
+					"app": "springboot-actuator-build",
+					"built-from": "java-s2i-template"
+				},
+				"name": "springboot-actuator-sample"
+			}
+		}, {
+			"apiVersion": "v1",
+			"kind": "DeploymentConfig",
+			"metadata": {
+				"annotations": {},
+				"labels": {
+					"app": "springboot-actuator-sample"
+				},
+				"name": "springboot-actuator-sample"
+			},
+			"spec": {
+				"replicas": 1,
+				"selector": {
+					"app": "springboot-actuator-sample",
+					"deploymentconfig": "springboot-actuator-sample"
+				},
+				"strategy": {
+					"rollingParams": {
+						"timeoutSeconds": 3600
+					},
+					"type": "Rolling"
+				},
+				"template": {
+					"metadata": {
+						"annotations": {},
+						"labels": {
+							"app": "springboot-actuator-sample",
+							"deploymentconfig": "springboot-actuator-sample"
+						}
+					},
+					"spec": {
+						"containers": [{
+								"name": "springboot-actuator-sample",
+								"image": "",
+								"imagePullPolicy": "IfNotPresent",
+								"livenessProbe": {
+									"httpGet": {
+										"path": "/actuator/health",
+										"port": 8080,
+										"scheme": "HTTP"
+									}
+								},
+								"readinessProbe": {
+									"httpGet": {
+										"path": "/actuator/health",
+										"port": 8080,
+										"scheme": "HTTP"
+									}
+								},
+								"ports": [{
+										"containerPort": 8778,
+										"name": "jolokia",
+										"protocol": "TCP"
+									}, {
+										"containerPort": 8080,
+										"name": "http",
+										"protocol": "TCP"
+									}, {
+										"containerPort": 8443,
+										"name": "https",
+										"protocol": "TCP"
+									}
+								],
+								"resources": {}
+							}
+						]
+					}
+				},
+				"triggers": [{
+						"type": "ConfigChange"
+					}, {
+						"imageChangeParams": {
+							"automatic": true,
+							"containerNames": [
+								"springboot-actuator-sample"
+							],
+							"from": {
+								"kind": "ImageStreamTag",
+								"name": "springboot-actuator-sample:latest"
+							}
+						},
+						"type": "ImageChange"
+					}
+				]
+			}
+		}, {
+			"apiVersion": "v1",
+			"kind": "Route",
+			"metadata": {
+				"annotations": {
+					"openshift.io/host.generated": "true"
+				},
+				"labels": {
+					"app": "springboot-actuator-sample"
+				},
+				"name": "springboot-actuator-sample"
+			},
+			"spec": {
+				"port": {
+					"targetPort": 8080
+				},
+				"to": {
+					"kind": "Service",
+					"name": "springboot-actuator-sample"
+				}
+			}
+		}, {
+			"apiVersion": "v1",
+			"kind": "Service",
+			"metadata": {
+				"labels": {
+					"app": "springboot-actuator-sample"
+				},
+				"name": "springboot-actuator-sample"
+			},
+			"spec": {
+				"ports": [{
+						"port": 8080,
+						"protocol": "TCP",
+						"targetPort": 8080
+					}
+				],
+				"selector": {
+					"app": "springboot-actuator-sample",
+					"deploymentconfig": "springboot-actuator-sample"
+				},
+				"type": "ClusterIP"
+			},
+			"status": {
+				"loadBalancer": {}
+			}
+		}
+	]
+}
