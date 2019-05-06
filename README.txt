@@ -15,7 +15,7 @@ $ mvn spring-boot:run
 
 6.1 - issue curl to get logs printed;
 $ curl -v 'http://localhost:8080/'
---- printed logs on Tomcat's corresponding stout (Console)
+--- printed logs on Tomcat's corresponding stdout (Console)
 INFO  SimpleController: printing a useful INFO log data!!!
 WARN  SimpleController: printing a useful WARN log data!!!
 ERROR SimpleController: printing a useful ERROR log data!!!
@@ -31,7 +31,7 @@ $ curl -v 'http://localhost:8080/actuator/loggers/com.samples.samplespringbootac
 
 6.4 - issue command request to get logs printed again, and we can see that more log levels are printed at this time;
 $ curl -v 'http://localhost:8080/'
---- printed logs on Tomcat's corresponding stout (Console)
+--- printed logs on Tomcat's corresponding stdout (Console)
 TRACE SimpleController: printing a useful TRACE log data!!!
 DEBUG SimpleController: printing a useful DEBUG log data!!!
 INFO  SimpleController: printing a useful INFO log data!!!
