@@ -2,11 +2,11 @@ the goal of this project was to have a studying case for the spring boot actuato
 
 1 - libraries required are defined on pom.xml artifact.
 
-2 - the artifact "application.properties" released under resources directory maps the desired exposed endpoints for "spring boot actuator" metrics, in this case, for "health", "info" and "loggers".
+2 - artifact "application.properties" released under resources directory maps the desired exposed endpoints for "spring boot actuator" metrics, in this case, for "health", "info" and "loggers".
 
-3 - the code for testing is under SimpleController.java artifactory, which defines as expected a Controller for incoming requests, so then on the corresponding method LOGGERS are printed according to its LOGGING level; OFF < ERROR < WARN < INFO < DEBUG < TRACE
+3 - code for testing is under SimpleController.java artifactory, which defines as expected a Controller for incoming requests, so then on the corresponding method LOGGERS are printed according to its LOGGING level; OFF < ERROR < WARN < INFO < DEBUG < TRACE
 
-4 - the artifactory "logback.xml" defines "ConsoleAppender" for two loggers, which by default are set as "INFO" level.
+4 - artifactory "logback.xml" defines "ConsoleAppender" for two loggers, which by default are set as "INFO" level.
 
 5 - with the aforementioned resources assembled, we can invoke maven to run the project;
 $ mvn spring-boot:run
